@@ -6,7 +6,7 @@ import { JobListing, JobApplication } from '../types';
 import { 
   Plus, Edit2, Trash2, Users, Briefcase, 
   ChevronRight, LayoutDashboard, Loader2, Search, X,
-  Phone, MapPin, User, Mail, Building, IndianRupee, Clock, Calendar
+  Phone, MapPin, User, Mail, Building, IndianRupee, Clock, Calendar, ExternalLink, FileText
 } from 'lucide-react';
 import { AdminJobForm } from '../components/AdminJobForm';
 import { formatDistanceToNow } from 'date-fns';
@@ -450,6 +450,26 @@ export const AdminPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Resume Section */}
+                {selectedApplication.resumeUrl && (
+                  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                      <FileText className="w-4 h-4 mr-2 text-orange-600" />
+                      Candidate Resume
+                    </h3>
+                    <a 
+                      href={selectedApplication.resumeUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-6 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-900 hover:bg-gray-50 transition-all shadow-sm group"
+                    >
+                      <FileText className="w-5 h-5 mr-3 text-orange-600" />
+                      View Resume File
+                      <ExternalLink className="w-4 h-4 ml-3 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                    </a>
+                  </div>
+                )}
 
                 {/* Interview Slots */}
                 <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">

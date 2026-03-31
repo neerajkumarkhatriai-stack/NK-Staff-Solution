@@ -5,9 +5,11 @@ import { JobListing, JobApplication, InterviewSlot } from '../types';
 import { 
   ArrowLeft, Loader2, CheckCircle2, Calendar, Clock, 
   User, Phone, Mail, Building, MapPin, Briefcase, 
-  IndianRupee, Timer
+  IndianRupee, Timer, FileText, Upload, X
 } from 'lucide-react';
 import { format, addDays, startOfToday, isWeekend } from 'date-fns';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../firebase';
 
 export const ApplyPage: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
@@ -16,6 +18,8 @@ export const ApplyPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const [formData, setFormData] = useState({
     applicantName: '',
@@ -66,12 +70,20 @@ export const ApplyPage: React.FC = () => {
 
     setSubmitting(true);
     try {
+      let resumeUrl = '';
+      if (resumeFile) {
+        const fileRef = ref(storage, `resumes/${job.id}_${Date.now()}_${resumeFile.name}`);
+        const uploadResult = await uploadBytes(fileRef, resumeFile);
+        resumeUrl = await getDownloadURL(uploadResult.ref);
+      }
+
       const application: Omit<JobApplication, 'id'> = {
         jobId: job.id,
         jobTitle: job.title,
         company: job.company,
         ...formData,
         interviewSlots: slots,
+        resumeUrl,
         appliedAt: Date.now()
       };
       await jobService.submitApplication(application);
@@ -285,6 +297,52 @@ export const ApplyPage: React.FC = () => {
                     placeholder="e.g. 30 Days, Immediate"
                   />
                 </div>
+              </div>
+            </section>
+
+            {/* Resume Upload */}
+            <section className="space-y-6 pt-6 border-t border-gray-50">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest flex items-center">
+                <FileText className="w-4 h-4 mr-2 text-orange-600" />
+                Resume / CV
+              </h3>
+              <div className="space-y-4">
+                {!resumeFile ? (
+                  <div className="relative group">
+                    <input 
+                      type="file" 
+                      accept=".pdf,.doc,.docx"
+                      onChange={e => setResumeFile(e.target.files?.[0] || null)}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    />
+                    <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center group-hover:border-orange-500 transition-colors bg-gray-50/50">
+                      <div className="bg-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                        <Upload className="w-6 h-6 text-gray-400 group-hover:text-orange-600 transition-colors" />
+                      </div>
+                      <p className="text-sm font-bold text-gray-900 mb-1">Click to upload or drag and drop</p>
+                      <p className="text-xs text-gray-500">PDF, DOC, DOCX (Max 5MB)</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-4 bg-orange-50 border border-orange-100 rounded-2xl">
+                    <div className="flex items-center">
+                      <div className="bg-orange-600 p-2 rounded-lg mr-3">
+                        <FileText className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-gray-900 truncate max-w-[200px]">{resumeFile.name}</p>
+                        <p className="text-[10px] text-orange-600 font-bold uppercase tracking-wider">{(resumeFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                      </div>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => setResumeFile(null)}
+                      className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
               </div>
             </section>
 
