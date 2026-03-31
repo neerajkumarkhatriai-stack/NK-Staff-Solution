@@ -13,11 +13,11 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
   const [formData, setFormData] = useState<Omit<JobListing, 'id' | 'postedAt'>>({
     title: initialData?.title || '',
     company: initialData?.company || '',
-    location: initialData?.location || 'Sonipat, Haryana',
+    location: initialData?.location || 'Delhi NCR',
     salary: initialData?.salary || '',
     experience: initialData?.experience || '0-2',
     jobType: initialData?.jobType || 'Full-time',
-    role: initialData?.role || 'Operator',
+    role: initialData?.role || 'Sales',
     description: initialData?.description || '',
     skills: initialData?.skills || [],
     contactEmail: initialData?.contactEmail || '',
@@ -60,6 +60,8 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
     setFormData({ ...formData, skills: formData.skills.filter(s => s !== skill) });
   };
 
+  const roleOptions: JobRole[] = ['Sales', 'HR', 'Admin', 'Marketing', 'Finance', 'Logistics', 'Operations', 'Manager', 'Other'];
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -71,7 +73,7 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
             value={formData.title}
             onChange={e => setFormData({...formData, title: e.target.value})}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-            placeholder="e.g. CNC Machine Operator"
+            placeholder="e.g. Sales Executive"
           />
         </div>
         <div className="space-y-1">
@@ -82,7 +84,7 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
             value={formData.company}
             onChange={e => setFormData({...formData, company: e.target.value})}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-            placeholder="e.g. Maruti Suzuki Vendor"
+            placeholder="e.g. ABC Retail Pvt Ltd"
           />
         </div>
         <div className="space-y-1">
@@ -102,7 +104,7 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
             value={formData.salary}
             onChange={e => setFormData({...formData, salary: e.target.value})}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-            placeholder="e.g. ₹15,000 - ₹20,000"
+            placeholder="e.g. ₹25,000 - ₹35,000"
           />
         </div>
         <div className="space-y-1">
@@ -136,12 +138,9 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
             onChange={e => setFormData({...formData, role: e.target.value as JobRole})}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
           >
-            <option value="Operator">Operator</option>
-            <option value="Supervisor">Supervisor</option>
-            <option value="Engineer">Engineer</option>
-            <option value="Technician">Technician</option>
-            <option value="Manager">Manager</option>
-            <option value="Other">Other</option>
+            {roleOptions.map(option => (
+              <option key={option} value={option}>{option}</option>
+            ))}
           </select>
         </div>
       </div>

@@ -229,7 +229,7 @@ export const ApplyPage: React.FC = () => {
                     value={formData.location}
                     onChange={e => setFormData({...formData, location: e.target.value})}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-                    placeholder="e.g. Sonipat, Delhi"
+                    placeholder="e.g. Delhi, Noida, Gurugram"
                   />
                 </div>
               </div>

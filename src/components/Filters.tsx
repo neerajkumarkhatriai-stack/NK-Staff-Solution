@@ -14,7 +14,7 @@ interface FiltersProps {
 export const Filters: React.FC<FiltersProps> = ({
   search, setSearch, role, setRole, experience, setExperience
 }) => {
-  const roles: (JobRole | 'All')[] = ['All', 'Operator', 'Supervisor', 'Engineer', 'Technician', 'Manager', 'Other'];
+  const roles: (JobRole | 'All')[] = ['All', 'Sales', 'HR', 'Admin', 'Marketing', 'Finance', 'Logistics', 'Operations', 'Manager', 'Other'];
   const experiences: (ExperienceRange | 'All')[] = ['All', '0-2', '2-5', '5+'];
 
   return (
@@ -31,7 +31,7 @@ export const Filters: React.FC<FiltersProps> = ({
               type="text" 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="CNC, Quality, Engineer..."
+              placeholder="Sales, HR, Admin..."
               className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all outline-none text-sm"
             />
             {search && (

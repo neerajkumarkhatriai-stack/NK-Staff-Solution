@@ -2,7 +2,7 @@
   "entities": {
     "JobListing": {
       "title": "Job Listing",
-      "description": "A job opening in a manufacturing unit in Sonipat.",
+      "description": "A Non IT job opening in Delhi NCR.",
       "type": "object",
       "properties": {
         "title": { "type": "string", "description": "Job title" },
@@ -11,7 +11,7 @@
         "salary": { "type": "string", "description": "Salary range or amount" },
         "experience": { "type": "string", "enum": ["0-2", "2-5", "5+"], "description": "Experience required in years" },
         "jobType": { "type": "string", "enum": ["Full-time", "Contract", "Part-time"], "description": "Type of job" },
-        "role": { "type": "string", "enum": ["Operator", "Supervisor", "Engineer", "Technician", "Manager", "Other"], "description": "Job role category" },
+        "role": { "type": "string", "enum": ["Sales", "HR", "Admin", "Marketing", "Finance", "Logistics", "Operations", "Manager", "Other"], "description": "Job role category" },
         "description": { "type": "string", "description": "Full job description" },
         "skills": { "type": "array", "items": { "type": "string" }, "description": "Required skills" },
         "postedAt": { "type": "number", "description": "Timestamp when job was posted" },

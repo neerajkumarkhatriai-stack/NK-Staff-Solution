@@ -42,10 +42,10 @@ export const HomePage: React.FC = () => {
       <div className="bg-white border-b border-gray-100 pt-12 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
-            Find Your Next <span className="text-orange-600">Manufacturing Job</span> in Sonipat
+            Find Your Next <span className="text-orange-600">Non IT Job</span> in Delhi NCR
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-            Connecting ITI, Diploma, and B.Tech candidates with the best manufacturing units in Haryana.
+            Connecting candidates with the best Non IT opportunities in Sales, HR, Admin, Finance, and more within a 150KM radius of Delhi.
           </p>
           {user?.email === 'neerajkumarkhatri.ai@gmail.com' && (
             <div className="mb-12">
@@ -65,7 +65,7 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="flex items-center">
               <MapPin className="w-4 h-4 mr-2 text-orange-600" />
-              Sonipat & Nearby
+              Delhi NCR & Nearby (150KM)
             </div>
           </div>
         </div>

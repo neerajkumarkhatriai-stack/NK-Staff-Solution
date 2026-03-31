@@ -1,4 +1,4 @@
-export type JobRole = 'Operator' | 'Supervisor' | 'Engineer' | 'Technician' | 'Manager' | 'Other';
+export type JobRole = 'Sales' | 'HR' | 'Admin' | 'Marketing' | 'Finance' | 'Logistics' | 'Operations' | 'Manager' | 'Other';
 export type JobType = 'Full-time' | 'Contract' | 'Part-time';
 export type ExperienceRange = '0-2' | '2-5' | '5+';
 

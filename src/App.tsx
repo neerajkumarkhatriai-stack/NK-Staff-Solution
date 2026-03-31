@@ -25,7 +25,7 @@ export default function App() {
               © {new Date().getFullYear()} NK Staff Solution. All rights reserved.
             </p>
             <p className="text-gray-400 text-xs">
-              Helping Sonipat's manufacturing industry find the right talent.
+              Helping Delhi NCR's Non IT industry find the right talent.
             </p>
           </div>
         </footer>
