@@ -133,7 +133,7 @@ export const jobService = {
     }
   },
 
-  async applyForJob(application: Omit<JobApplication, 'id'>): Promise<string | undefined> {
+  async submitApplication(application: Omit<JobApplication, 'id'>): Promise<string | undefined> {
     const path = 'applications';
     try {
       const docRef = await addDoc(collection(db, path), application);

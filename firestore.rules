@@ -68,7 +68,15 @@ service cloud.firestore {
       return data.jobId is string &&
              data.applicantName is string && data.applicantName.size() > 0 && data.applicantName.size() < 100 &&
              data.applicantPhone is string && data.applicantPhone.size() >= 10 && data.applicantPhone.size() <= 15 &&
-             data.appliedAt is number;
+             data.appliedAt is number &&
+             data.interviewSlots is list && data.interviewSlots.size() == 3 &&
+             (!('applicantEmail' in data) || (data.applicantEmail is string && data.applicantEmail.size() < 100)) &&
+             (!('currentCompany' in data) || (data.currentCompany is string && data.currentCompany.size() < 100)) &&
+             (!('location' in data) || (data.location is string && data.location.size() < 100)) &&
+             (!('experience' in data) || (data.experience is string && data.experience.size() < 50)) &&
+             (!('currentCTC' in data) || (data.currentCTC is string && data.currentCTC.size() < 50)) &&
+             (!('expectedCTC' in data) || (data.expectedCTC is string && data.expectedCTC.size() < 50)) &&
+             (!('noticePeriod' in data) || (data.noticePeriod is string && data.noticePeriod.size() < 50));
     }
 
     // Rules

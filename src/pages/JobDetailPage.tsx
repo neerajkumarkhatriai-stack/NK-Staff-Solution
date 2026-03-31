@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { JobListing, JobApplication } from '../types';
+import { JobListing } from '../types';
 import { jobService } from '../services/jobService';
 import { 
   ArrowLeft, MapPin, Briefcase, IndianRupee, Clock, 
-  CheckCircle2, Send, Phone, Mail, ExternalLink, Loader2, User
+  Send, Phone, Mail, ExternalLink, Loader2, User
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
@@ -14,13 +14,6 @@ export const JobDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const [job, setJob] = useState<JobListing | null>(null);
   const [loading, setLoading] = useState(true);
-  const [applying, setApplying] = useState(false);
-  const [applied, setApplied] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: ''
-  });
 
   useEffect(() => {
     if (id) {
@@ -30,31 +23,6 @@ export const JobDetailPage: React.FC = () => {
       });
     }
   }, [id]);
-
-  const handleApply = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!job) return;
-
-    setApplying(true);
-    try {
-      const application: Omit<JobApplication, 'id'> = {
-        jobId: job.id,
-        jobTitle: job.title,
-        company: job.company,
-        applicantName: formData.name,
-        applicantPhone: formData.phone,
-        applicantEmail: formData.email,
-        appliedAt: Date.now()
-      };
-      await jobService.applyForJob(application);
-      setApplied(true);
-    } catch (error) {
-      console.error('Application failed', error);
-      alert('Failed to submit application. Please try again.');
-    } finally {
-      setApplying(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -153,117 +121,54 @@ export const JobDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Sidebar - Apply Form */}
+          {/* Sidebar - Apply Section */}
           <div className="lg:col-span-1">
             <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-lg sticky top-24">
-              {applied ? (
-                <div className="text-center py-8">
-                  <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle2 className="w-8 h-8 text-green-600" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Application Sent!</h3>
-                  <p className="text-gray-500 text-sm mb-6">
-                    NK Staff Solution team will contact you shortly.
-                  </p>
-                  <button 
-                    onClick={() => setApplied(false)}
-                    className="text-orange-600 font-semibold hover:underline text-sm"
-                  >
-                    Send another application
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <h3 className="text-xl font-bold text-gray-900 mb-6">Quick Apply</h3>
-                  <form onSubmit={handleApply} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
-                        Full Name
-                      </label>
-                      <input 
-                        required
-                        type="text" 
-                        value={formData.name}
-                        onChange={e => setFormData({...formData, name: e.target.value})}
-                        placeholder="Enter your name"
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none text-sm transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
-                        Phone Number
-                      </label>
-                      <input 
-                        required
-                        type="tel" 
-                        value={formData.phone}
-                        onChange={e => setFormData({...formData, phone: e.target.value})}
-                        placeholder="10-digit mobile number"
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none text-sm transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
-                        Email (Optional)
-                      </label>
-                      <input 
-                        type="email" 
-                        value={formData.email}
-                        onChange={e => setFormData({...formData, email: e.target.value})}
-                        placeholder="your@email.com"
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none text-sm transition-all"
-                      />
-                    </div>
-                    <button 
-                      disabled={applying}
-                      type="submit"
-                      className="w-full bg-orange-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all flex items-center justify-center disabled:opacity-70"
-                    >
-                      {applying ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <>
-                          <Send className="w-4 h-4 mr-2" />
-                          Submit Application
-                        </>
-                      )}
-                    </button>
-                  </form>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Interested?</h3>
+              <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+                Fill out our detailed application form to schedule your interview with <span className="font-bold text-gray-900">{job.company}</span>.
+              </p>
+              
+              <Link 
+                to={`/apply/${job.id}`}
+                className="w-full bg-orange-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-orange-200 hover:bg-orange-700 transition-all flex items-center justify-center group"
+              >
+                <Send className="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" />
+                Apply Now
+              </Link>
 
-                  <div className="mt-8 pt-6 border-t border-gray-50 space-y-4">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Company Contact</p>
-                    {job.hrName && (
-                      <div className="flex items-center text-sm text-gray-900 font-semibold">
-                        <User className="w-4 h-4 mr-3 text-orange-600" />
-                        {job.hrName} (HR)
-                      </div>
-                    )}
-                    {job.contactPhone && (
-                      <a href={`tel:${job.contactPhone}`} className="flex items-center text-sm text-gray-600 hover:text-orange-600 transition-colors">
-                        <Phone className="w-4 h-4 mr-3 text-gray-400" />
-                        {job.contactPhone}
-                      </a>
-                    )}
-                    {job.contactEmail && (
-                      <a href={`mailto:${job.contactEmail}`} className="flex items-center text-sm text-gray-600 hover:text-orange-600 transition-colors">
-                        <Mail className="w-4 h-4 mr-3 text-gray-400" />
-                        {job.contactEmail}
-                      </a>
-                    )}
-                    {job.applyLink && (
-                      <a 
-                        href={job.applyLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center text-sm text-orange-600 font-semibold hover:underline"
-                      >
-                        <ExternalLink className="w-4 h-4 mr-3" />
-                        Apply on Company Website
-                      </a>
-                    )}
+              <div className="mt-8 pt-6 border-t border-gray-50 space-y-4">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Company Contact</p>
+                {job.hrName && (
+                  <div className="flex items-center text-sm text-gray-900 font-semibold">
+                    <User className="w-4 h-4 mr-3 text-orange-600" />
+                    {job.hrName} (HR)
                   </div>
-                </>
-              )}
+                )}
+                {job.contactPhone && (
+                  <a href={`tel:${job.contactPhone}`} className="flex items-center text-sm text-gray-600 hover:text-orange-600 transition-colors">
+                    <Phone className="w-4 h-4 mr-3 text-gray-400" />
+                    {job.contactPhone}
+                  </a>
+                )}
+                {job.contactEmail && (
+                  <a href={`mailto:${job.contactEmail}`} className="flex items-center text-sm text-gray-600 hover:text-orange-600 transition-colors">
+                    <Mail className="w-4 h-4 mr-3 text-gray-400" />
+                    {job.contactEmail}
+                  </a>
+                )}
+                {job.applyLink && (
+                  <a 
+                    href={job.applyLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center text-sm text-orange-600 font-semibold hover:underline"
+                  >
+                    <ExternalLink className="w-4 h-4 mr-3" />
+                    Apply on Company Website
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>

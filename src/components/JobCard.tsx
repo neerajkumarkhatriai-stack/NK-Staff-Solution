@@ -10,10 +10,7 @@ interface JobCardProps {
 
 export const JobCard: React.FC<JobCardProps> = ({ job }) => {
   return (
-    <Link 
-      to={`/job/${job.id}`}
-      className="block bg-white border border-gray-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 group"
-    >
+    <div className="bg-white border border-gray-100 rounded-xl p-5 hover:shadow-lg transition-all duration-300 group">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">
@@ -45,22 +42,31 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-gray-50">
-        <div className="flex flex-wrap gap-2">
-          {job.skills.slice(0, 3).map((skill, idx) => (
-            <span key={idx} className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded">
-              {skill}
-            </span>
-          ))}
-          {job.skills.length > 3 && (
-            <span className="text-[10px] text-gray-400">+{job.skills.length - 3} more</span>
-          )}
-        </div>
-        <div className="flex items-center text-orange-600 font-medium text-sm">
-          View Details
-          <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-        </div>
+      <div className="flex flex-wrap gap-2 mb-6">
+        {job.skills.slice(0, 3).map((skill, idx) => (
+          <span key={idx} className="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded">
+            {skill}
+          </span>
+        ))}
+        {job.skills.length > 3 && (
+          <span className="text-[10px] text-gray-400">+{job.skills.length - 3} more</span>
+        )}
       </div>
-    </Link>
+
+      <div className="flex items-center gap-3 pt-4 border-t border-gray-50">
+        <Link 
+          to={`/job/${job.id}`}
+          className="flex-1 text-center py-2.5 rounded-lg border border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-colors"
+        >
+          View Details
+        </Link>
+        <Link 
+          to={`/apply/${job.id}`}
+          className="flex-1 text-center py-2.5 rounded-lg bg-orange-600 text-white font-semibold text-sm hover:bg-orange-700 transition-colors shadow-sm"
+        >
+          Apply Now
+        </Link>
+      </div>
+    </div>
   );
 };

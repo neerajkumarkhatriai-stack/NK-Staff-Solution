@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { HomePage } from './pages/HomePage';
 import { JobDetailPage } from './pages/JobDetailPage';
 import { AdminPage } from './pages/AdminPage';
+import { ApplyPage } from './pages/ApplyPage';
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/job/:id" element={<JobDetailPage />} />
+            <Route path="/apply/:jobId" element={<ApplyPage />} />
             <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </main>

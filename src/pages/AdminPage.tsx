@@ -5,7 +5,8 @@ import { jobService } from '../services/jobService';
 import { JobListing, JobApplication } from '../types';
 import { 
   Plus, Edit2, Trash2, Users, Briefcase, 
-  ChevronRight, LayoutDashboard, Loader2, Search, X
+  ChevronRight, LayoutDashboard, Loader2, Search, X,
+  Phone, MapPin, User, Mail, Building, IndianRupee, Clock, Calendar
 } from 'lucide-react';
 import { AdminJobForm } from '../components/AdminJobForm';
 import { formatDistanceToNow } from 'date-fns';
@@ -19,6 +20,7 @@ export const AdminPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingJob, setEditingJob] = useState<JobListing | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<JobApplication | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -342,21 +344,31 @@ export const AdminPage: React.FC = () => {
                       <p className="text-sm text-gray-500 mb-2">Applied for <span className="text-orange-600 font-semibold">{app.jobTitle}</span> at {app.company}</p>
                       <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                         <div className="flex items-center">
-                          <Search className="w-4 h-4 mr-2 text-gray-400" />
+                          <Phone className="w-4 h-4 mr-2 text-gray-400" />
                           {app.applicantPhone}
                         </div>
-                        {app.applicantEmail && (
-                          <div className="flex items-center">
-                            <Search className="w-4 h-4 mr-2 text-gray-400" />
-                            {app.applicantEmail}
-                          </div>
-                        )}
+                        <div className="flex items-center">
+                          <Briefcase className="w-4 h-4 mr-2 text-gray-400" />
+                          {app.experience || 'N/A'} Exp
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                          {app.location || 'N/A'}
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Applied</p>
-                    <p className="text-sm text-gray-900 font-medium">{formatDistanceToNow(app.appliedAt)} ago</p>
+                  <div className="flex items-center space-x-4">
+                    <div className="text-right hidden md:block">
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Applied</p>
+                      <p className="text-sm text-gray-900 font-medium">{formatDistanceToNow(app.appliedAt)} ago</p>
+                    </div>
+                    <button 
+                      onClick={() => setSelectedApplication(app)}
+                      className="bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-gray-800 transition-all"
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               ))}
@@ -364,6 +376,111 @@ export const AdminPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Application Details Modal */}
+      {selectedApplication && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-8">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Application Details</h2>
+                  <p className="text-gray-500 text-sm">Applied for {selectedApplication.jobTitle}</p>
+                </div>
+                <button 
+                  onClick={() => setSelectedApplication(null)}
+                  className="p-2 text-gray-400 hover:text-gray-900 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="space-y-8">
+                {/* Personal & Professional Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Personal Info</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center text-sm">
+                        <User className="w-4 h-4 mr-3 text-orange-600" />
+                        <span className="font-semibold text-gray-900">{selectedApplication.applicantName}</span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <Phone className="w-4 h-4 mr-3 text-gray-400" />
+                        <a href={`tel:${selectedApplication.applicantPhone}`} className="hover:text-orange-600 underline">
+                          {selectedApplication.applicantPhone}
+                        </a>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <Mail className="w-4 h-4 mr-3 text-gray-400" />
+                        <a href={`mailto:${selectedApplication.applicantEmail}`} className="hover:text-orange-600 underline">
+                          {selectedApplication.applicantEmail}
+                        </a>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <MapPin className="w-4 h-4 mr-3 text-gray-400" />
+                        <span className="text-gray-600">{selectedApplication.location || 'N/A'}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Professional Info</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center text-sm">
+                        <Briefcase className="w-4 h-4 mr-3 text-gray-400" />
+                        <span className="text-gray-600">Exp: <span className="font-semibold text-gray-900">{selectedApplication.experience || 'N/A'}</span></span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <Building className="w-4 h-4 mr-3 text-gray-400" />
+                        <span className="text-gray-600">Company: <span className="font-semibold text-gray-900">{selectedApplication.currentCompany || 'N/A'}</span></span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <IndianRupee className="w-4 h-4 mr-3 text-gray-400" />
+                        <span className="text-gray-600">Current CTC: <span className="font-semibold text-gray-900">{selectedApplication.currentCTC || 'N/A'}</span></span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <IndianRupee className="w-4 h-4 mr-3 text-gray-400" />
+                        <span className="text-gray-600">Expected CTC: <span className="font-semibold text-gray-900">{selectedApplication.expectedCTC || 'N/A'}</span></span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <Clock className="w-4 h-4 mr-3 text-gray-400" />
+                        <span className="text-gray-600">Notice: <span className="font-semibold text-gray-900">{selectedApplication.noticePeriod || 'N/A'}</span></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Interview Slots */}
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                    <Calendar className="w-4 h-4 mr-2 text-orange-600" />
+                    Proposed Interview Slots
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {selectedApplication.interviewSlots?.map((slot, idx) => (
+                      <div key={idx} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">Slot {idx + 1}</p>
+                        <p className="text-sm font-bold text-gray-900">{slot.date}</p>
+                        <p className="text-xs text-gray-500">{slot.time}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4">
+                  <button 
+                    onClick={() => setSelectedApplication(null)}
+                    className="px-6 py-3 bg-gray-100 text-gray-900 rounded-xl font-bold hover:bg-gray-200 transition-all"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">

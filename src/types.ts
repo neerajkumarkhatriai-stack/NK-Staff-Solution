@@ -27,6 +27,11 @@ export interface JobAlert {
   createdAt: number;
 }
 
+export interface InterviewSlot {
+  date: string;
+  time: string;
+}
+
 export interface JobApplication {
   id: string;
   jobId: string;
@@ -35,6 +40,13 @@ export interface JobApplication {
   applicantName: string;
   applicantPhone: string;
   applicantEmail?: string;
+  currentCompany?: string;
+  location?: string;
+  experience?: string;
+  currentCTC?: string;
+  expectedCTC?: string;
+  noticePeriod?: string;
+  interviewSlots: InterviewSlot[];
   resumeUrl?: string;
   appliedAt: number;
 }

@@ -33,10 +33,27 @@
         "applicantName": { "type": "string", "description": "Name of the applicant" },
         "applicantPhone": { "type": "string", "description": "Phone number of the applicant" },
         "applicantEmail": { "type": "string", "format": "email", "description": "Email of the applicant" },
+        "currentCompany": { "type": "string", "description": "Current company of the applicant" },
+        "location": { "type": "string", "description": "Current location of the applicant" },
+        "experience": { "type": "string", "description": "Years of experience" },
+        "currentCTC": { "type": "string", "description": "Current CTC" },
+        "expectedCTC": { "type": "string", "description": "Expected CTC" },
+        "noticePeriod": { "type": "string", "description": "Notice period" },
+        "interviewSlots": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "date": { "type": "string" },
+              "time": { "type": "string" }
+            }
+          },
+          "description": "Selected interview slots" 
+        },
         "resumeUrl": { "type": "string", "format": "uri", "description": "URL to the applicant's resume" },
         "appliedAt": { "type": "number", "description": "Timestamp when application was submitted" }
       },
-      "required": ["jobId", "applicantName", "applicantPhone", "appliedAt"]
+      "required": ["jobId", "applicantName", "applicantPhone", "appliedAt", "interviewSlots"]
     },
     "JobAlert": {
       "title": "Job Alert",
