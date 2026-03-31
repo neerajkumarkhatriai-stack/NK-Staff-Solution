@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: /jobs
+    // Fields:
+    //   - title: string (required)
+    //   - company: string (required)
+    //   - location: string (required)
+    //   - salary: string (optional)
+    //   - experience: string (required, enum: 0-2, 2-5, 5+)
+    //   - jobType: string (required, enum: Full-time, Contract, Part-time)
+    //   - role: string (required, enum: Operator, Supervisor, Engineer, Technician, Manager, Other)
+    //   - description: string (required)
+    //   - skills: list (optional)
+    //   - postedAt: number (required)
+    //   - contactEmail: string (optional)
+    //   - contactPhone: string (optional)
+    //   - hrName: string (optional)
+    //   - applyLink: string (optional)
+    //
+    // Collection: /applications
+    // Fields:
+    //   - jobId: string (required)
+    //   - applicantName: string (required)
+    //   - applicantPhone: string (required)
+    //   - appliedAt: number (required)
+    //   ... other fields
+    //
+    // Collection: /alerts
+    // Fields:
+    //   - email: string (optional)
+    //   - phone: string (optional)
+    //   - createdAt: number (required)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "neerajkumarkhatri.ai@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidJob(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.company is string && data.company.size() > 0 && data.company.size() < 200 &&
+             data.location is string && data.location.size() > 0 && data.location.size() < 200 &&
+             data.experience in ['0-2', '2-5', '5+'] &&
+             data.jobType in ['Full-time', 'Contract', 'Part-time'] &&
+             data.role in ['Operator', 'Supervisor', 'Engineer', 'Technician', 'Manager', 'Other'] &&
+             data.description is string && data.description.size() > 0 && data.description.size() < 10000 &&
+             data.postedAt is number &&
+             (!('hrName' in data) || (data.hrName is string && data.hrName.size() < 100)) &&
+             (!('contactPhone' in data) || (data.contactPhone is string && data.contactPhone.size() < 20)) &&
+             (!('contactEmail' in data) || (data.contactEmail is string && data.contactEmail.size() < 100)) &&
+             (!('applyLink' in data) || (data.applyLink is string && data.applyLink.size() < 500));
+    }
+
+    function isValidApplication(data) {
+      return data.jobId is string &&
+             data.applicantName is string && data.applicantName.size() > 0 && data.applicantName.size() < 100 &&
+             data.applicantPhone is string && data.applicantPhone.size() >= 10 && data.applicantPhone.size() <= 15 &&
+             data.appliedAt is number;
+    }
+
+    // Rules
+    match /jobs/{jobId} {
+      allow read: if true; // Publicly readable
+      allow create, update, delete: if isAdmin() && isValidJob(request.resource.data);
+    }
+
+    match /applications/{appId} {
+      allow read: if isAdmin();
+      allow create: if isValidApplication(request.resource.data);
+    }
+
+    match /alerts/{alertId} {
+      allow read: if isAdmin();
+      allow create: if true;
+    }
+
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if isAdmin();
+    }
+  }
+}

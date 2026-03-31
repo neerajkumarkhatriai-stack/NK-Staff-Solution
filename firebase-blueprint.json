@@ -1,0 +1,67 @@
+{
+  "entities": {
+    "JobListing": {
+      "title": "Job Listing",
+      "description": "A job opening in a manufacturing unit in Sonipat.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Job title" },
+        "company": { "type": "string", "description": "Company name" },
+        "location": { "type": "string", "description": "Job location" },
+        "salary": { "type": "string", "description": "Salary range or amount" },
+        "experience": { "type": "string", "enum": ["0-2", "2-5", "5+"], "description": "Experience required in years" },
+        "jobType": { "type": "string", "enum": ["Full-time", "Contract", "Part-time"], "description": "Type of job" },
+        "role": { "type": "string", "enum": ["Operator", "Supervisor", "Engineer", "Technician", "Manager", "Other"], "description": "Job role category" },
+        "description": { "type": "string", "description": "Full job description" },
+        "skills": { "type": "array", "items": { "type": "string" }, "description": "Required skills" },
+        "postedAt": { "type": "number", "description": "Timestamp when job was posted" },
+        "contactEmail": { "type": "string", "format": "email", "description": "Contact email for applications" },
+        "contactPhone": { "type": "string", "description": "Contact phone for applications" },
+        "hrName": { "type": "string", "description": "Name of the HR contact" },
+        "applyLink": { "type": "string", "format": "uri", "description": "External application link" }
+      },
+      "required": ["title", "company", "location", "experience", "jobType", "role", "description", "postedAt"]
+    },
+    "JobApplication": {
+      "title": "Job Application",
+      "description": "A job application submitted by a user.",
+      "type": "object",
+      "properties": {
+        "jobId": { "type": "string", "description": "ID of the job being applied for" },
+        "jobTitle": { "type": "string", "description": "Title of the job" },
+        "company": { "type": "string", "description": "Company name" },
+        "applicantName": { "type": "string", "description": "Name of the applicant" },
+        "applicantPhone": { "type": "string", "description": "Phone number of the applicant" },
+        "applicantEmail": { "type": "string", "format": "email", "description": "Email of the applicant" },
+        "resumeUrl": { "type": "string", "format": "uri", "description": "URL to the applicant's resume" },
+        "appliedAt": { "type": "number", "description": "Timestamp when application was submitted" }
+      },
+      "required": ["jobId", "applicantName", "applicantPhone", "appliedAt"]
+    },
+    "JobAlert": {
+      "title": "Job Alert",
+      "description": "A subscription for job alerts.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email", "description": "Email for alerts" },
+        "phone": { "type": "string", "description": "Phone for alerts" },
+        "keywords": { "type": "array", "items": { "type": "string" }, "description": "Keywords to match jobs" },
+        "createdAt": { "type": "number", "description": "Timestamp when alert was created" }
+      }
+    }
+  },
+  "firestore": {
+    "/jobs": {
+      "schema": "JobListing",
+      "description": "Collection of job listings"
+    },
+    "/applications": {
+      "schema": "JobApplication",
+      "description": "Collection of job applications"
+    },
+    "/alerts": {
+      "schema": "JobAlert",
+      "description": "Collection of job alert subscriptions"
+    }
+  }
+}
