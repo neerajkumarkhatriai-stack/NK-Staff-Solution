@@ -11,16 +11,21 @@
         "salary": { "type": "string", "description": "Salary range or amount" },
         "experience": { "type": "string", "enum": ["0-2", "2-5", "5+"], "description": "Experience required in years" },
         "jobType": { "type": "string", "enum": ["Full-time", "Contract", "Part-time"], "description": "Type of job" },
+        "workType": { "type": "string", "enum": ["On-site", "Remote", "Hybrid"], "description": "Work setting" },
         "role": { "type": "string", "enum": ["Sales", "HR", "Admin", "Marketing", "Finance", "Logistics", "Operations", "Manager", "Other"], "description": "Job role category" },
+        "department": { "type": "string", "description": "Department name" },
+        "openings": { "type": "number", "description": "Number of openings" },
+        "status": { "type": "string", "enum": ["Published", "Internal", "Draft"], "description": "Job status" },
         "description": { "type": "string", "description": "Full job description" },
         "skills": { "type": "array", "items": { "type": "string" }, "description": "Required skills" },
         "postedAt": { "type": "number", "description": "Timestamp when job was posted" },
+        "lastActivityAt": { "type": "number", "description": "Timestamp of last activity" },
         "contactEmail": { "type": "string", "format": "email", "description": "Contact email for applications" },
         "contactPhone": { "type": "string", "description": "Contact phone for applications" },
         "hrName": { "type": "string", "description": "Name of the HR contact" },
         "applyLink": { "type": "string", "format": "uri", "description": "External application link" }
       },
-      "required": ["title", "company", "location", "experience", "jobType", "role", "description", "postedAt"]
+      "required": ["title", "company", "location", "experience", "jobType", "workType", "role", "department", "openings", "status", "description", "postedAt", "lastActivityAt"]
     },
     "JobApplication": {
       "title": "Job Application",
@@ -37,7 +42,7 @@
         "location": { "type": "string", "description": "Current location of the applicant" },
         "experience": { "type": "string", "description": "Years of experience" },
         "currentCTC": { "type": "string", "description": "Current CTC" },
-        "expectedCTC": { "type": "string", "description": "Expected CTC" },
+        "expectedCTC": { "type": "string", "description": "Expected salary" },
         "noticePeriod": { "type": "string", "description": "Notice period" },
         "interviewSlots": { 
           "type": "array", 
@@ -51,9 +56,19 @@
           "description": "Selected interview slots" 
         },
         "resumeUrl": { "type": "string", "format": "uri", "description": "URL to the applicant's resume" },
-        "appliedAt": { "type": "number", "description": "Timestamp when application was submitted" }
+        "appliedAt": { "type": "number", "description": "Timestamp when application was submitted" },
+        "status": { 
+          "type": "string", 
+          "enum": ["Sourced", "Applied", "Phone Screen", "Hiring Manager Interview", "Offer", "Hired", "Rejected"],
+          "description": "Current status of the application" 
+        },
+        "rejectionStage": { 
+          "type": "string", 
+          "enum": ["Sourced", "Applied", "Phone Screen", "Hiring Manager Interview", "Offer", "Hired", "Rejected"],
+          "description": "Stage at which the application was rejected" 
+        }
       },
-      "required": ["jobId", "applicantName", "applicantPhone", "appliedAt", "interviewSlots"]
+      "required": ["jobId", "applicantName", "applicantPhone", "appliedAt", "interviewSlots", "status"]
     },
     "JobAlert": {
       "title": "Job Alert",

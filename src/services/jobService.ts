@@ -152,5 +152,19 @@ export const jobService = {
     }, (error) => {
       handleFirestoreError(error, OperationType.LIST, path);
     });
+  },
+
+  async updateApplicationStatus(id: string, status: string, rejectionStage?: string): Promise<void> {
+    const path = `applications/${id}`;
+    try {
+      const docRef = doc(db, 'applications', id);
+      const updateData: any = { status };
+      if (rejectionStage) {
+        updateData.rejectionStage = rejectionStage;
+      }
+      await updateDoc(docRef, updateData);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
+    }
   }
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { JobListing, JobRole, ExperienceRange, JobType } from '../types';
+import { JobListing, JobRole, ExperienceRange, JobType, WorkType, JobStatus } from '../types';
 import { jobService } from '../services/jobService';
 import { Loader2, Save } from 'lucide-react';
 
@@ -10,14 +10,18 @@ interface AdminJobFormProps {
 
 export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSuccess }) => {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<Omit<JobListing, 'id' | 'postedAt'>>({
+  const [formData, setFormData] = useState<Omit<JobListing, 'id' | 'postedAt' | 'lastActivityAt'>>({
     title: initialData?.title || '',
     company: initialData?.company || '',
     location: initialData?.location || 'Delhi NCR',
     salary: initialData?.salary || '',
     experience: initialData?.experience || '0-2',
     jobType: initialData?.jobType || 'Full-time',
+    workType: initialData?.workType || 'On-site',
     role: initialData?.role || 'Sales',
+    department: initialData?.department || 'Support',
+    openings: initialData?.openings || 1,
+    status: initialData?.status || 'Published',
     description: initialData?.description || '',
     skills: initialData?.skills || [],
     contactEmail: initialData?.contactEmail || '',
@@ -33,11 +37,15 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
     setLoading(true);
     try {
       if (initialData) {
-        await jobService.updateJob(initialData.id, formData);
+        await jobService.updateJob(initialData.id, {
+          ...formData,
+          lastActivityAt: Date.now()
+        });
       } else {
         await jobService.addJob({
           ...formData,
-          postedAt: Date.now()
+          postedAt: Date.now(),
+          lastActivityAt: Date.now()
         });
       }
       onSuccess();
@@ -73,7 +81,7 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
             value={formData.title}
             onChange={e => setFormData({...formData, title: e.target.value})}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-            placeholder="e.g. Sales Executive"
+            placeholder="e.g. Customer Support Representative"
           />
         </div>
         <div className="space-y-1">
@@ -84,7 +92,29 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
             value={formData.company}
             onChange={e => setFormData({...formData, company: e.target.value})}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-            placeholder="e.g. ABC Retail Pvt Ltd"
+            placeholder="e.g. Workable Customer Enablement"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Department</label>
+          <input 
+            required
+            type="text" 
+            value={formData.department}
+            onChange={e => setFormData({...formData, department: e.target.value})}
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
+            placeholder="e.g. Support"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Number of Openings</label>
+          <input 
+            required
+            type="number" 
+            min="1"
+            value={formData.openings}
+            onChange={e => setFormData({...formData, openings: parseInt(e.target.value) || 1})}
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
           />
         </div>
         <div className="space-y-1">
@@ -95,6 +125,7 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
             value={formData.location}
             onChange={e => setFormData({...formData, location: e.target.value})}
             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
+            placeholder="e.g. Berlin, Germany"
           />
         </div>
         <div className="space-y-1">
@@ -132,6 +163,30 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
           </select>
         </div>
         <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Work Type</label>
+          <select 
+            value={formData.workType}
+            onChange={e => setFormData({...formData, workType: e.target.value as WorkType})}
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
+          >
+            <option value="On-site">On-site</option>
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+          </select>
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Job Status</label>
+          <select 
+            value={formData.status}
+            onChange={e => setFormData({...formData, status: e.target.value as JobStatus})}
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
+          >
+            <option value="Published">Published</option>
+            <option value="Internal">Used Internally</option>
+            <option value="Draft">Draft</option>
+          </select>
+        </div>
+        <div className="space-y-1">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Role Category</label>
           <select 
             value={formData.role}
@@ -166,7 +221,7 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
             onChange={e => setSkillInput(e.target.value)}
             onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), addSkill())}
             className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm"
-            placeholder="Add a skill (e.g. CNC, Quality, AutoCAD)"
+            placeholder="Add a skill (e.g. Customer Support, Zendesk, Intercom)"
           />
           <button 
             type="button"

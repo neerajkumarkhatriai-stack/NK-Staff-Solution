@@ -55,7 +55,7 @@ service cloud.firestore {
              data.location is string && data.location.size() > 0 && data.location.size() < 200 &&
              data.experience in ['0-2', '2-5', '5+'] &&
              data.jobType in ['Full-time', 'Contract', 'Part-time'] &&
-             data.role in ['Operator', 'Supervisor', 'Engineer', 'Technician', 'Manager', 'Other'] &&
+             data.role in ['Sales', 'HR', 'Admin', 'Marketing', 'Finance', 'Logistics', 'Operations', 'Manager', 'Other'] &&
              data.description is string && data.description.size() > 0 && data.description.size() < 10000 &&
              data.postedAt is number &&
              (!('hrName' in data) || (data.hrName is string && data.hrName.size() < 100)) &&
@@ -65,11 +65,14 @@ service cloud.firestore {
     }
 
     function isValidApplication(data) {
+      let validStatuses = ['Sourcing', 'Shortlisted', 'Interview Round 1', 'Interview Round 2', 'Managerial Round', 'HR Round', 'Offer Ready', 'Offered', 'Joined', 'Offer Backout', 'Rejected'];
       return data.jobId is string &&
              data.applicantName is string && data.applicantName.size() > 0 && data.applicantName.size() < 100 &&
              data.applicantPhone is string && data.applicantPhone.size() >= 10 && data.applicantPhone.size() <= 15 &&
              data.appliedAt is number &&
              data.interviewSlots is list && data.interviewSlots.size() == 3 &&
+             data.status in validStatuses &&
+             (!('rejectionStage' in data) || (data.rejectionStage in validStatuses)) &&
              (!('applicantEmail' in data) || (data.applicantEmail is string && data.applicantEmail.size() < 100)) &&
              (!('currentCompany' in data) || (data.currentCompany is string && data.currentCompany.size() < 100)) &&
              (!('location' in data) || (data.location is string && data.location.size() < 100)) &&
@@ -86,7 +89,7 @@ service cloud.firestore {
     }
 
     match /applications/{appId} {
-      allow read: if isAdmin();
+      allow read, update: if isAdmin();
       allow create: if isValidApplication(request.resource.data);
     }
 

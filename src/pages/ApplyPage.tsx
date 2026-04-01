@@ -84,7 +84,8 @@ export const ApplyPage: React.FC = () => {
         ...formData,
         interviewSlots: slots,
         resumeUrl,
-        appliedAt: Date.now()
+        appliedAt: Date.now(),
+        status: 'Applied'
       };
       await jobService.submitApplication(application);
       setSubmitted(true);

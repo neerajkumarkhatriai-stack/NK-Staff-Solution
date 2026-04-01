@@ -1,6 +1,8 @@
 export type JobRole = 'Sales' | 'HR' | 'Admin' | 'Marketing' | 'Finance' | 'Logistics' | 'Operations' | 'Manager' | 'Other';
 export type JobType = 'Full-time' | 'Contract' | 'Part-time';
 export type ExperienceRange = '0-2' | '2-5' | '5+';
+export type WorkType = 'On-site' | 'Remote' | 'Hybrid';
+export type JobStatus = 'Published' | 'Internal' | 'Draft';
 
 export interface JobListing {
   id: string;
@@ -10,10 +12,15 @@ export interface JobListing {
   salary?: string;
   experience: ExperienceRange;
   jobType: JobType;
+  workType: WorkType;
   role: JobRole;
+  department: string;
+  openings: number;
+  status: JobStatus;
   description: string;
   skills: string[];
   postedAt: number; // timestamp
+  lastActivityAt: number; // timestamp
   contactEmail?: string;
   contactPhone?: string;
   hrName?: string;
@@ -32,6 +39,15 @@ export interface InterviewSlot {
   time: string;
 }
 
+export type ApplicationStatus = 
+  | 'Sourced' 
+  | 'Applied' 
+  | 'Phone Screen' 
+  | 'Hiring Manager Interview' 
+  | 'Offer' 
+  | 'Hired' 
+  | 'Rejected';
+
 export interface JobApplication {
   id: string;
   jobId: string;
@@ -49,4 +65,6 @@ export interface JobApplication {
   interviewSlots: InterviewSlot[];
   resumeUrl?: string;
   appliedAt: number;
+  status: ApplicationStatus;
+  rejectionStage?: ApplicationStatus;
 }
