@@ -11,6 +11,7 @@ interface AdminJobFormProps {
 export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Omit<JobListing, 'id' | 'postedAt' | 'lastActivityAt'>>({
+    jobCode: initialData?.jobCode || '',
     title: initialData?.title || '',
     company: initialData?.company || '',
     location: initialData?.location || 'Delhi NCR',
@@ -32,6 +33,11 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
 
   const [skillInput, setSkillInput] = useState('');
 
+  const generateJobCode = () => {
+    const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+    return `JOB-${random}`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -42,8 +48,10 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
           lastActivityAt: Date.now()
         });
       } else {
+        const jobCode = formData.jobCode || generateJobCode();
         await jobService.addJob({
           ...formData,
+          jobCode,
           postedAt: Date.now(),
           lastActivityAt: Date.now()
         });
@@ -73,6 +81,17 @@ export const AdminJobForm: React.FC<AdminJobFormProps> = ({ initialData, onSucce
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-1">
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Job Code (Auto-generated if empty)</label>
+          <input 
+            type="text" 
+            value={formData.jobCode}
+            onChange={e => setFormData({...formData, jobCode: e.target.value.toUpperCase()})}
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-sm font-mono"
+            placeholder="e.g. JOB-X123"
+            disabled={!!initialData}
+          />
+        </div>
         <div className="space-y-1">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Job Title</label>
           <input 

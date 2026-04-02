@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { jobService } from '../services/jobService';
 import { JobListing, JobApplication, InterviewSlot } from '../types';
 import { 
@@ -14,6 +14,8 @@ import { storage } from '../firebase';
 export const ApplyPage: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const source = searchParams.get('source');
   const [job, setJob] = useState<JobListing | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -85,7 +87,7 @@ export const ApplyPage: React.FC = () => {
         interviewSlots: slots,
         resumeUrl,
         appliedAt: Date.now(),
-        status: 'Applied'
+        status: source === 'external' ? 'Sourced' : 'Applied'
       };
       await jobService.submitApplication(application);
       setSubmitted(true);

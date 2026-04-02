@@ -6,6 +6,7 @@ export type JobStatus = 'Published' | 'Internal' | 'Draft';
 
 export interface JobListing {
   id: string;
+  jobCode: string; // Unique human-readable ID
   title: string;
   company: string;
   location: string;

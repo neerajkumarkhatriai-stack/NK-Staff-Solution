@@ -7,11 +7,12 @@ import {
   Plus, Edit2, Trash2, Users, Briefcase, 
   ChevronRight, LayoutDashboard, Loader2, Search, X, Globe,
   Phone, MapPin, User, Mail, Building, IndianRupee, Clock, Calendar, ExternalLink, FileText,
-  MoreVertical
+  MoreVertical, BarChart3
 } from 'lucide-react';
 import { AdminJobForm } from '../components/AdminJobForm';
 import { ApplicationDetails } from '../components/ApplicationDetails';
 import { RejectionModal } from '../components/RejectionModal';
+import { JobReportModal } from '../components/JobReportModal';
 import { formatDistanceToNow } from 'date-fns';
 
 export const AdminPage: React.FC = () => {
@@ -25,6 +26,7 @@ export const AdminPage: React.FC = () => {
   const [editingJob, setEditingJob] = useState<JobListing | null>(null);
   const [selectedApplication, setSelectedApplication] = useState<JobApplication | null>(null);
   const [rejectionModalApp, setRejectionModalApp] = useState<JobApplication | null>(null);
+  const [reportJob, setReportJob] = useState<JobListing | null>(null);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,14 +50,15 @@ export const AdminPage: React.FC = () => {
   }, [user]);
 
   const handleSeedData = async () => {
-    if (window.confirm('This will add sample jobs to the database. Continue?')) {
+    if (window.confirm('This will add 5 sample jobs and 50+ applications to the database. Continue?')) {
       const sampleJobs: Omit<JobListing, 'id'>[] = [
         {
+          jobCode: 'JOB-SUPP1',
           title: 'Customer Support Representative',
           company: 'Workable Customer Enablement',
           location: 'Berlin, Germany',
           department: 'Support',
-          openings: 1,
+          openings: 3,
           status: 'Published',
           workType: 'On-site',
           salary: '€40,000 - €50,000',
@@ -64,17 +67,18 @@ export const AdminPage: React.FC = () => {
           role: 'Other',
           description: 'Help our customers succeed with our platform.',
           skills: ['Customer Support', 'Zendesk', 'Communication'],
-          postedAt: Date.now(),
+          postedAt: Date.now() - 15 * 86400000,
           lastActivityAt: Date.now(),
           contactPhone: '9876543210'
         },
         {
+          jobCode: 'JOB-SALE1',
           title: 'Account Executive',
           company: 'Workable Sales',
           location: 'London, United Kingdom',
-          department: 'Account Executive',
-          openings: 1,
-          status: 'Internal',
+          department: 'Sales',
+          openings: 2,
+          status: 'Published',
           workType: 'On-site',
           salary: '£60,000 - £80,000',
           experience: '2-5',
@@ -82,17 +86,101 @@ export const AdminPage: React.FC = () => {
           role: 'Sales',
           description: 'Drive revenue growth by acquiring new customers.',
           skills: ['Sales', 'Negotiation', 'CRM'],
-          postedAt: Date.now() - 86400000,
-          lastActivityAt: Date.now() - 86400000,
+          postedAt: Date.now() - 30 * 86400000,
+          lastActivityAt: Date.now() - 5 * 86400000,
           contactEmail: 'sales@workable.com'
+        },
+        {
+          jobCode: 'JOB-MKTG1',
+          title: 'Growth Marketing Manager',
+          company: 'Workable Marketing',
+          location: 'Remote',
+          department: 'Marketing',
+          openings: 1,
+          status: 'Published',
+          workType: 'Remote',
+          salary: '$90,000 - $120,000',
+          experience: '5+',
+          jobType: 'Full-time',
+          role: 'Marketing',
+          description: 'Lead our growth initiatives across all channels.',
+          skills: ['SEO', 'PPC', 'Analytics'],
+          postedAt: Date.now() - 7 * 86400000,
+          lastActivityAt: Date.now(),
+          contactEmail: 'marketing@workable.com'
+        },
+        {
+          jobCode: 'JOB-HR001',
+          title: 'HR Generalist',
+          company: 'Workable People',
+          location: 'Delhi NCR',
+          department: 'HR',
+          openings: 1,
+          status: 'Published',
+          workType: 'Hybrid',
+          salary: '₹6,00,000 - ₹8,00,000',
+          experience: '2-5',
+          jobType: 'Full-time',
+          role: 'HR',
+          description: 'Manage end-to-end HR operations.',
+          skills: ['Recruitment', 'Payroll', 'Employee Relations'],
+          postedAt: Date.now() - 3 * 86400000,
+          lastActivityAt: Date.now(),
+          contactEmail: 'hr@workable.com'
+        },
+        {
+          jobCode: 'JOB-OPS02',
+          title: 'Logistics Coordinator',
+          company: 'Workable Logistics',
+          location: 'Mumbai',
+          department: 'Operations',
+          openings: 5,
+          status: 'Published',
+          workType: 'On-site',
+          salary: '₹4,00,000 - ₹6,00,000',
+          experience: '0-2',
+          jobType: 'Full-time',
+          role: 'Logistics',
+          description: 'Coordinate daily logistics and supply chain activities.',
+          skills: ['Supply Chain', 'Inventory Management', 'Excel'],
+          postedAt: Date.now() - 45 * 86400000,
+          lastActivityAt: Date.now() - 10 * 86400000,
+          contactEmail: 'ops@workable.com'
         }
       ];
 
       try {
-        for (const job of sampleJobs) {
-          await jobService.addJob(job);
+        const names = ['Rahul Sharma', 'Priya Patel', 'Amit Kumar', 'Sneha Gupta', 'Vikram Singh', 'Anjali Verma', 'Deepak Reddy', 'Kavita Iyer', 'Sanjay Mehra', 'Pooja Jain'];
+        const statuses: ApplicationStatus[] = ['Sourced', 'Applied', 'Phone Screen', 'Hiring Manager Interview', 'Offer', 'Hired', 'Rejected'];
+
+        for (const jobData of sampleJobs) {
+          const jobId = await jobService.addJob(jobData);
+          if (!jobId) continue;
+
+          // Add 10-15 applications per job
+          const appCount = 10 + Math.floor(Math.random() * 6);
+          for (let i = 0; i < appCount; i++) {
+            const name = names[Math.floor(Math.random() * names.length)] + ' ' + (i + 1);
+            const status = statuses[Math.floor(Math.random() * statuses.length)];
+            
+            await jobService.submitApplication({
+              jobId,
+              jobTitle: jobData.title,
+              company: jobData.company,
+              applicantName: name,
+              applicantPhone: '987654321' + i,
+              applicantEmail: name.toLowerCase().replace(' ', '.') + '@example.com',
+              appliedAt: jobData.postedAt + (Math.random() * (Date.now() - jobData.postedAt)),
+              status,
+              interviewSlots: [
+                { date: '2026-04-10', time: '10:00' },
+                { date: '2026-04-11', time: '14:00' },
+                { date: '2026-04-12', time: '16:00' }
+              ]
+            });
+          }
         }
-        alert('Sample data added successfully!');
+        alert('Sample data with applications added successfully!');
       } catch (error) {
         console.error('Seeding failed', error);
         alert('Failed to add sample data.');
@@ -356,6 +444,11 @@ export const AdminPage: React.FC = () => {
                           <Plus className="w-4 h-4 text-gray-400 rotate-45" />
                         </div>
                         <div>
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-bold rounded uppercase tracking-wider">
+                              {job.jobCode}
+                            </span>
+                          </div>
                           <h3 className="text-lg font-bold text-gray-900 flex items-center">
                             {job.title}
                           </h3>
@@ -414,6 +507,22 @@ export const AdminPage: React.FC = () => {
                                 <Edit2 className="w-4 h-4 mr-2" /> Edit Job
                               </button>
                               <button 
+                                onClick={() => {
+                                  const url = `${window.location.origin}/apply/${job.id}?source=external`;
+                                  navigator.clipboard.writeText(url);
+                                  alert('External application link copied to clipboard!');
+                                }}
+                                className="w-full text-left px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
+                              >
+                                <ExternalLink className="w-4 h-4 mr-2" /> Copy External Link
+                              </button>
+                              <button 
+                                onClick={() => setReportJob(job)}
+                                className="w-full text-left px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
+                              >
+                                <BarChart3 className="w-4 h-4 mr-2" /> View Report
+                              </button>
+                              <button 
                                 onClick={() => handleDuplicateJob(job)}
                                 className="w-full text-left px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
                               >
@@ -457,7 +566,7 @@ export const AdminPage: React.FC = () => {
                         {job.status === 'Published' ? (
                           <>
                             <Globe className="w-4 h-4 text-teal-500 mr-2" />
-                            <span>Published on your <span className="text-teal-600 font-bold">careers page</span> and <span className="text-teal-600 font-bold">8 free</span> job boards</span>
+                            <span>Automatically posted to <span className="text-teal-600 font-bold">8 free portals</span> and your careers page</span>
                           </>
                         ) : (
                           <>
@@ -498,6 +607,14 @@ export const AdminPage: React.FC = () => {
             handleStatusUpdate(rejectionModalApp.id, 'Rejected', stage);
             setRejectionModalApp(null);
           }}
+        />
+      )}
+
+      {reportJob && (
+        <JobReportModal 
+          job={reportJob}
+          applications={applications.filter(a => a.jobId === reportJob.id)}
+          onClose={() => setReportJob(null)}
         />
       )}
 
